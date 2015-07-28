@@ -1,0 +1,31 @@
+
+```sh
+vagrant up
+vagrant ssh
+cd /vagrant
+curl -sS https://getcomposer.org/installer | php 
+php composer.phar require zfcampus/zf-oauth2-doctrine dev-master
+php composer.phar require zf-commons/zfc-user-doctrine-orm
+mysql -u root -p123 -e "create database apigility"
+
+cd vendor/zfcampus/zf-oauth2-doctrine
+git branch --track feature/zf-mvc-auth origin/feature/zf-mvc-auth
+git checkout feature/zf-mvc-auth
+cd ../../..
+```
+
+Edit config/modules.config.php add 
+
+```php
+    'DoctrineModule',
+    'DoctrineORMModule',
+    'ZF\OAuth2\Doctrine',
+    'ZfcBase',
+    'ZfcUser',
+    'ZfcUserDoctrineORM',    
+```
+
+
+
+
+php public/index.php orm:schema-tool:create
