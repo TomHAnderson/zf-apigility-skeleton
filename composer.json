@@ -32,7 +32,8 @@
         "zfcampus/zf-apigility-documentation": "^1.0.5",
         "zfcampus/zf-development-mode": "~2.0",
         "zfcampus/zf-oauth2-doctrine": "dev-master",
-        "zf-commons/zfc-user-doctrine-orm": "^1.0"
+        "zf-commons/zfc-user-doctrine-orm": "^1.0",
+        "bjyoungblood/bjy-authorize": "^1.4"
     },
     "require-dev": {
         "zendframework/zftool": "dev-master",

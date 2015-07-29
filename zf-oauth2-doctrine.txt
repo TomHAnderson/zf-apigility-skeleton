@@ -7,11 +7,15 @@ curl -sS https://getcomposer.org/installer | php
 php composer.phar require zfcampus/zf-oauth2-doctrine dev-master
 php composer.phar require zf-commons/zfc-user-doctrine-orm
 mysql -u root -p123 -e "create database apigility"
+php public/index.php development enable
 
 cd vendor/zfcampus/zf-oauth2-doctrine
 git branch --track feature/zf-mvc-auth origin/feature/zf-mvc-auth
 git checkout feature/zf-mvc-auth
 cd ../../..
+cp config/autload/local.php.dist config/autoload/local.php
+cp vendor/zfcampus/zf-oauth2-doctrine/config/oauth2.doctrine-orm.global.php.dist config/autoload/oauth2.doctrine-orm.global.php
+cp vendor/zf-commons/zfc-user/config/zfcuser.global.php.dist config/autoload/zfcuser.global.php
 ```
 
 Edit config/modules.config.php add 
@@ -25,7 +29,103 @@ Edit config/modules.config.php add
     'ZfcUserDoctrineORM',    
 ```
 
+Edit config/autoload/local.php and change to
+```php
+$ormParams = [
+    'database'  => 'apigility',
+    'username'  => 'root',
+    'password'  => '123',
+    'hostname'  => 'localhost',
+    'port'  => '3306',
+];
 
+return array(
+    /**
+     * Doctrine configuration for MySQL or Maria DB
+     */
+    'doctrine' => array(
+        'connection' => array(
+            'orm_default' => array(
+                'driverClass' => 'Doctrine\DBAL\Driver\PDOMySql\Driver',
+                'params' => array(
+                    'database'  => $ormParams['database'],
+                    'user'  => $ormParams['username'],
+                    'password'  => $ormParams['password'],
+                    'host'  => $ormParams['hostname'],
+                    'dbname'  => $ormParams['database'],
+                    'port'  => $ormParams['port'],
+                ),
+            ),
+        ),
+    ),
+    'zf-mvc-auth' => array(
+        'authentication' => array(
+            'map' => array(
+                'DbApi\\V1' => 'oauth2_doctrine',
+            ),
+        ),
+    ),
 
+    'zf-mvc-auth' => array(
+        'authentication' => array(
+            'adapters' => array(
+                'oauth2_doctrine' => array(
+                    'adapter' => 'ZF\\MvcAuth\\Authentication\\OAuth2Adapter',
+                    'storage' => array(
+                        'storage' => 'oauth2.doctrineadapter.default',
+                    ),
+                ),
+            ),
+        ),
+    ),
+);
+```
 
+Edit config/autoload/zfcuser.global.php and add to the $settings array:
+```php
+    'user_entity_class' => 'Db\Entity\User',
+    'enable_default_entities' => false,
+```
+
+Edit config/autoload/oauth2.doctrine-orm.global.php and change the $userEntity variable to
+```php
+$userEntity = 'Db\Entity\User';
+```
+
+Create the database schema:
+```php
 php public/index.php orm:schema-tool:create
+```
+
+Browse to:
+```
+http://localhost:8080/user/login
+```
+
+Click "Sign Up", fill out the form and click "Create Profile"
+You are now authenticated.
+
+Start MySQL `mysql -u root -p123 apigility;` and enter this SQL:
+```sql
+INSERT INTO Client_OAuth2 (
+    user_id, 
+    clientId, 
+    secret, 
+    redirectUri, 
+    grantType
+) values (
+    1, 
+    'clienttest', 
+    '$2y$14$EYNw8HNLzGlSoLcqclRzuecuO3X843AWCtctmFJtUtyUguWPxaSEm', 
+    '', 
+    'authorization_code,access_token,refresh_token,implicit'
+);
+```
+The password is 'password'.
+
+Browse to
+```
+http://localhost:8080/apigility/ui
+```
+Click "New API"
+Create a new api titled "DbApi"

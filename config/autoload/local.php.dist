@@ -1,15 +1,4 @@
 <?php
-/**
- * Local Configuration Override
- *
- * This configuration override file is for overriding environment-specific and
- * security-sensitive configuration information. Copy this file without the
- * .dist extension at the end and populate values as needed.
- *
- * @NOTE: This file is ignored from Git by default with the .gitignore included
- * in ZendSkeletonApplication. This is a good practice, as it prevents sensitive
- * credentials from accidentally being committed into version control.
- */
 
 $ormParams = [
     'database'  => 'apigility',
@@ -34,6 +23,26 @@ return array(
                     'host'  => $ormParams['hostname'],
                     'dbname'  => $ormParams['database'],
                     'port'  => $ormParams['port'],
+                ),
+            ),
+        ),
+    ),
+    'zf-mvc-auth' => array(
+        'authentication' => array(
+            'map' => array(
+                'DbApi\\V1' => 'oauth2_doctrine',
+            ),
+        ),
+    ),
+
+    'zf-mvc-auth' => array(
+        'authentication' => array(
+            'adapters' => array(
+                'oauth2_doctrine' => array(
+                    'adapter' => 'ZF\\MvcAuth\\Authentication\\OAuth2Adapter',
+                    'storage' => array(
+                        'storage' => 'oauth2.doctrineadapter.default',
+                    ),
                 ),
             ),
         ),

@@ -6,13 +6,11 @@ use ZF\OAuth2\Doctrine\Entity\UserInterface as OAuth2UserInterface;
 use Zend\Stdlib\ArraySerializableInterface;
 use ZfcUser\Entity\UserInterface as ZfcUserInterface;
 use Doctrine\Common\Collections\ArrayCollection;
+use Db\Entity\Role;
 use Exception;
 use Datetime;
 
-class User implements 
-    OAuth2UserInterface, 
-    ArraySerializableInterface, 
-    ZfcUserInterface
+class User implements OAuth2UserInterface, ArraySerializableInterface, ZfcUserInterface
 {
     // oauth2 fields
     protected $client;
@@ -27,6 +25,9 @@ class User implements
     protected $displayName;
     protected $password;
     protected $state;
+
+    // bjyAuthorize fields
+    protected $role;
 
     // skeleton fields
     protected $createdAt;
@@ -70,6 +71,14 @@ class User implements
         );
     }
 
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->role = new ArrayCollection();
+    }
+
     public function getId()
     {
         return $this->id;
@@ -78,6 +87,34 @@ class User implements
     public function setId($value)
     {
         return Exception("User.setId is not implemented");
+    }
+
+    public function getRole()
+    {
+        return $this->role;
+    }
+
+    /**
+     * Add role
+     *
+     * @param \Db\Entity\Role $role
+     * @return Role
+     */
+    public function addRole(Role $role)
+    {
+        $this->role[] = $role;
+
+        return $this;
+    }
+
+    /**
+     * Remove role
+     *
+     * @param \Db\Entity\Role $role
+     */
+    public function removeRole(Role $role)
+    {
+        $this->role->removeElement($role);
     }
 
     public function getUsername()
