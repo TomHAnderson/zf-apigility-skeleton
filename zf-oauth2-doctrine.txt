@@ -13,6 +13,7 @@ cd vendor/zfcampus/zf-oauth2-doctrine
 git branch --track feature/zf-mvc-auth origin/feature/zf-mvc-auth
 git checkout feature/zf-mvc-auth
 cd ../../..
+
 cp config/autload/local.php.dist config/autoload/local.php
 cp vendor/zfcampus/zf-oauth2-doctrine/config/oauth2.doctrine-orm.global.php.dist config/autoload/oauth2.doctrine-orm.global.php
 cp vendor/zf-commons/zfc-user/config/zfcuser.global.php.dist config/autoload/zfcuser.global.php
@@ -28,6 +29,14 @@ Edit config/modules.config.php add
     'ZfcUser',
     'ZfcUserDoctrineORM',    
 ```
+
+Browse to
+```
+http://localhost:8080/apigility/ui
+```
+Click "New API"
+Create a new api titled "DbApi"
+
 
 Edit config/autoload/local.php and change to
 ```php
@@ -58,6 +67,18 @@ return array(
             ),
         ),
     ),
+    
+    'router' => array(
+        'routes' => array(
+            'oauth' => array(
+                'options' => array(
+                    'spec' => '%oauth%',
+                    'regex' => '(?P<oauth>(/oauth))',
+                ),
+                'type' => 'regex',
+            ),
+        ),
+    ),
     'zf-mvc-auth' => array(
         'authentication' => array(
             'map' => array(
@@ -73,6 +94,7 @@ return array(
                     'adapter' => 'ZF\\MvcAuth\\Authentication\\OAuth2Adapter',
                     'storage' => array(
                         'storage' => 'oauth2.doctrineadapter.default',
+                        'route' => '/oauth',
                     ),
                 ),
             ),
@@ -118,14 +140,8 @@ INSERT INTO Client_OAuth2 (
     'clienttest', 
     '$2y$14$EYNw8HNLzGlSoLcqclRzuecuO3X843AWCtctmFJtUtyUguWPxaSEm', 
     '', 
-    'authorization_code,access_token,refresh_token,implicit'
+    'a:4:{i:0;s:18:"authorization_code";i:1;s:12:"access_token";i:2;s:13:"refresh_token";i:3;s:8:"implicit";}'
 );
 ```
 The password is 'password'.
 
-Browse to
-```
-http://localhost:8080/apigility/ui
-```
-Click "New API"
-Create a new api titled "DbApi"
