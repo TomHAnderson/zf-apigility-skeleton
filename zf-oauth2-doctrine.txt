@@ -14,7 +14,7 @@ git branch --track feature/zf-mvc-auth origin/feature/zf-mvc-auth
 git checkout feature/zf-mvc-auth
 cd ../../..
 
-cp config/autload/local.php.dist config/autoload/local.php
+cp config/autoload/local.php.dist config/autoload/local.php
 cp vendor/zfcampus/zf-oauth2-doctrine/config/oauth2.doctrine-orm.global.php.dist config/autoload/oauth2.doctrine-orm.global.php
 cp vendor/zf-commons/zfc-user/config/zfcuser.global.php.dist config/autoload/zfcuser.global.php
 ```
@@ -124,7 +124,7 @@ Browse to:
 http://localhost:8080/user/login
 ```
 
-Click "Sign Up", fill out the form and click "Create Profile"
+Click "Sign Up", fill out the form and click "Register"
 You are now authenticated.
 
 Start MySQL `mysql -u root -p123 apigility;` and enter this SQL:
@@ -144,4 +144,9 @@ INSERT INTO Client_OAuth2 (
 );
 ```
 The password is 'password'.
+
+Browse to 
+```
+http://localhost:8080/oauth/authorize?client_id=clienttest&redirect_uri=http%3A%2F%2Flocalhost%3A8082%2Foauth2%2Fclient%2Fdefault&scope=&response_type=code&approval_prompt=auto&state=a59b93086b4faeef87a81e125ac52630
+```
 
